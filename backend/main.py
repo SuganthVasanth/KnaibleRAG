@@ -20,7 +20,7 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from backend.routes import documents, chat, users
+from backend.routes import documents, chat, users , apikeys
 
 app = FastAPI()
 
@@ -34,7 +34,8 @@ origins = [
 # Add CORS Middleware here before your routes
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,           # whitelist your frontend origins
+    # allow_origins=origins,           # whitelist your frontend origins
+    allow_origins=["*"],           # whitelist your frontend origins
     allow_credentials=True,
     allow_methods=["*"],             # allow all HTTP methods
     allow_headers=["*"],             # allow all headers
@@ -45,3 +46,4 @@ app.include_router(users.router, prefix="/auth")  # Include user auth routes pre
 # app.include_router(documents.router)
 app.include_router(chat.router)
 app.include_router(documents.router, prefix="/documents", tags=["Documents"])
+app.include_router(apikeys.router, prefix="/apikeys", tags=["API Keys"])

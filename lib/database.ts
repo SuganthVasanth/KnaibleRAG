@@ -3,6 +3,7 @@ import { persistentStorage } from "./persistent-storage"
 // Interfaces
 interface User {
   id: string
+  _is:string
   username: string
   email: string
   token:string

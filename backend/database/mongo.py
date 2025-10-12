@@ -1,3 +1,4 @@
+from datetime import datetime
 from pymongo import MongoClient
 from bson import ObjectId
 import gridfs
@@ -107,3 +108,16 @@ def get_user_api_keys(user_id: str):
         k["_id"] = str(k["_id"])
         k["user_id"] = str(k["user_id"])
     return keys
+
+
+def save_api_key(user_id: str, key: str, documents: list):
+    """
+    Save API key with user id and selected documents (filename/path).
+    """
+    doc = {
+        "user_id": ObjectId(user_id),
+        "key": key,
+        "documents": documents,  # List of dict {filename, path}
+        "createdAt": datetime.utcnow(),
+    }
+    return api_keys_collection.insert_one(doc)

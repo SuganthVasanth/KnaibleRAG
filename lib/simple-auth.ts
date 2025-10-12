@@ -113,6 +113,7 @@ import { v4 as uuidv4 } from "uuid" // npm install uuid
 // User interface
 interface User {
   id: string
+  _id: string;
   username: string
   email: string
   password: string
@@ -131,6 +132,7 @@ export const authDB = {
   createUser: async (userData: { username: string; email: string; password: string }): Promise<User> => {
     const newUser: User = {
       id: `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        _id: `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, 
       ...userData,
       createdAt: new Date(),
       token: uuidv4(), // assign a unique token
@@ -171,7 +173,9 @@ export const authDB = {
 export const sessionManager = {
   setSession: (user: User) => {
     if (typeof window !== "undefined") {
-      localStorage.setItem("knaible_user", JSON.stringify(user))
+       const sessionUser = { ...user, _id: user._id || user.id }; 
+      // localStorage.setItem("knaible_user", JSON.stringify(user))
+      localStorage.setItem("knaible_user", JSON.stringify(sessionUser))
     }
   },
 

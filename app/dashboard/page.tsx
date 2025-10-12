@@ -793,6 +793,7 @@ import { log } from "console";
 
 interface Document {
   id: string;
+  _id: string;
   filename: string;
   uploadedAt: string;
   status: "processing" | "ready" | "error";
@@ -805,6 +806,7 @@ interface UserInfo {
   totalUsers: number;
   users: Array<{
     id: string;
+    _id: string;
     username: string;
     email: string;
     createdAt: string;
@@ -867,7 +869,7 @@ export default function DashboardPage() {
       const token = user?.token; // Make sure your useAuth context provides the JWT token
 
       const response = await fetch(
-        `http://127.0.0.1:8000/documents/?userId=${user?.id}`,
+        `http://127.0.0.1:8000/documents/?userId=${user?._id}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -879,6 +881,7 @@ export default function DashboardPage() {
       const data = await response.json();
 
       if (!response.ok) {
+        console.log(response)
         throw new Error(
           `API error: ${response.status}, ${
             data?.error || JSON.stringify(data)
@@ -931,7 +934,7 @@ export default function DashboardPage() {
     setUploadStatus("Uploading...");
 
     try {
-      const userId = user?.id || "demo-user-1";
+      const userId = user?._id || "demo-user-1";
       const token = user?.token;
 
       console.log(token);
@@ -950,7 +953,7 @@ export default function DashboardPage() {
       // print(fileToUpload)
       const formData = new FormData();
       formData.append("file", fileToUpload);
-      formData.append("userId", userId);
+      formData.append("userId", user?._id);
 
       console.log("📤 Uploading file:", fileToUpload.name);
       console.log("🧠 Token used:", token);

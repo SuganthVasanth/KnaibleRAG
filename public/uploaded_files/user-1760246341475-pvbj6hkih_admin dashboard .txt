@@ -1,0 +1,235 @@
+(.venv) PS C:\Users\Suganth\Downloads\mini2\backend> cd ..
+(.venv) PS C:\Users\Suganth\Downloads\mini2> cd app
+(.venv) PS C:\Users\Suganth\Downloads\mini2\app> dir
+
+
+    Directory: C:\Users\Suganth\Downloads\mini2\app
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----        21-09-2025  09:03 PM                api
+d-----        21-09-2025  09:03 PM                auth
+d-----        21-09-2025  09:03 PM                chat
+d-----        21-09-2025  09:03 PM                dashboard
+-a----        21-09-2025  09:03 PM           2428 globals.css
+-a----        21-09-2025  09:03 PM            628 layout.tsx
+-a----        21-09-2025  09:03 PM           5626 page.tsx
+-a----        21-09-2025  09:03 PM            331 providers.tsx
+
+
+(.venv) PS C:\Users\Suganth\Downloads\mini2\app> cd api
+(.venv) PS C:\Users\Suganth\Downloads\mini2\app\api> dir
+
+
+    Directory: C:\Users\Suganth\Downloads\mini2\app\api
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----        21-09-2025  09:03 PM                chat
+d-----        21-09-2025  09:03 PM                debug
+d-----        21-09-2025  09:03 PM                documents
+d-----        21-09-2025  09:03 PM                status
+
+
+(.venv) PS C:\Users\Suganth\Downloads\mini2\app\api> cd ..
+(.venv) PS C:\Users\Suganth\Downloads\mini2\app> cd auth
+(.venv) PS C:\Users\Suganth\Downloads\mini2\app\auth> dir
+
+
+    Directory: C:\Users\Suganth\Downloads\mini2\app\auth
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----        21-09-2025  09:03 PM                signin
+
+
+(.venv) PS C:\Users\Suganth\Downloads\mini2\app\auth> cd ..
+(.venv) PS C:\Users\Suganth\Downloads\mini2\app> cd auth
+(.venv) PS C:\Users\Suganth\Downloads\mini2\app\auth> dir
+
+
+    Directory: C:\Users\Suganth\Downloads\mini2\app\auth
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----        21-09-2025  09:03 PM                signin
+
+
+(.venv) PS C:\Users\Suganth\Downloads\mini2\app\auth> cd ..
+(.venv) PS C:\Users\Suganth\Downloads\mini2\app> cd chat
+(.venv) PS C:\Users\Suganth\Downloads\mini2\app\chat> dir
+
+
+    Directory: C:\Users\Suganth\Downloads\mini2\app\chat
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----        21-09-2025  09:03 PM          12880 page.tsx
+
+
+(.venv) PS C:\Users\Suganth\Downloads\mini2\app\chat> cd ..
+(.venv) PS C:\Users\Suganth\Downloads\mini2\app> cd dashboard
+(.venv) PS C:\Users\Suganth\Downloads\mini2\app\dashboard> dir
+
+
+    Directory: C:\Users\Suganth\Downloads\mini2\app\dashboard
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----        21-09-2025  09:03 PM          27821 page.tsx
+
+
+(.venv) PS C:\Users\Suganth\Downloads\mini2\app\dashboard> cd ..
+(.venv) PS C:\Users\Suganth\Downloads\mini2\app> cd 
+(.venv) PS C:\Users\Suganth\Downloads\mini2\app> 
+(.venv) PS C:\Users\Suganth\Downloads\mini2\app> cd components
+cd : Cannot find path 'C:\Users\Suganth\Downloads\mini2\app\components' because it does not exist.
+At line:1 char:1
++ cd components
++ ~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Users\Sugant...\app\components:String) [Set-Location], ItemNotFoundException
+    + FullyQualifiedErrorId : PathNotFound,Microsoft.PowerShell.Commands.SetLocationCommand
+
+(.venv) PS C:\Users\Suganth\Downloads\mini2\app> cd ..
+(.venv) PS C:\Users\Suganth\Downloads\mini2> cd components
+(.venv) PS C:\Users\Suganth\Downloads\mini2\components> dir
+
+
+    Directory: C:\Users\Suganth\Downloads\mini2\components
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----        21-09-2025  09:03 PM                ui
+-a----        21-09-2025  09:03 PM           1027 auth-wrapper.tsx
+-a----        21-09-2025  09:03 PM           3934 pdf-upload-helper.tsx
+-a----        21-09-2025  09:03 PM           1833 status-indicator.tsx
+-a----        21-09-2025  09:03 PM            292 theme-provider.tsx
+
+
+(.venv) PS C:\Users\Suganth\Downloads\mini2\components> cd ui
+(.venv) PS C:\Users\Suganth\Downloads\mini2\components\ui> dir
+
+
+    Directory: C:\Users\Suganth\Downloads\mini2\components\ui
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----        21-09-2025  09:03 PM           1991 accordion.tsx
+-a----        21-09-2025  09:03 PM           4434 alert-dialog.tsx
+-a----        21-09-2025  09:03 PM           1584 alert.tsx
+-a----        21-09-2025  09:03 PM            154 aspect-ratio.tsx
+-a----        21-09-2025  09:03 PM           1419 avatar.tsx
+-a----        21-09-2025  09:03 PM           1128 badge.tsx
+-a----        21-09-2025  09:03 PM           2712 breadcrumb.tsx
+-a----        21-09-2025  09:03 PM           1901 button.tsx
+-a----        21-09-2025  09:03 PM           2587 calendar.tsx
+-a----        21-09-2025  09:03 PM           1858 card.tsx
+-a----        21-09-2025  09:03 PM           6224 carousel.tsx
+-a----        21-09-2025  09:03 PM          10480 chart.tsx
+-a----        21-09-2025  09:03 PM           1070 checkbox.tsx
+-a----        21-09-2025  09:03 PM            329 collapsible.tsx
+-a----        21-09-2025  09:03 PM           4899 command.tsx
+-a----        21-09-2025  09:03 PM           7260 context-menu.tsx
+-a----        21-09-2025  09:03 PM           3849 dialog.tsx
+-a----        21-09-2025  09:03 PM           3021 drawer.tsx
+-a----        21-09-2025  09:03 PM           7433 dropdown-menu.tsx
+-a----        21-09-2025  09:03 PM           4099 form.tsx
+-a----        21-09-2025  09:03 PM           1198 hover-card.tsx
+-a----        21-09-2025  09:03 PM           2168 input-otp.tsx
+-a----        21-09-2025  09:03 PM            791 input.tsx
+-a----        21-09-2025  09:03 PM            724 label.tsx
+-a----        21-09-2025  09:03 PM           7988 menubar.tsx
+-a----        21-09-2025  09:03 PM           5046 navigation-menu.tsx
+-a----        21-09-2025  09:03 PM           2751 pagination.tsx
+-a----        21-09-2025  09:03 PM           1244 popover.tsx
+-a----        21-09-2025  09:03 PM            791 progress.tsx
+-a----        21-09-2025  09:03 PM           1481 radio-group.tsx
+-a----        21-09-2025  09:03 PM           1723 resizable.tsx
+-a----        21-09-2025  09:03 PM           1656 scroll-area.tsx
+-a----        21-09-2025  09:03 PM           5629 select.tsx
+-a----        21-09-2025  09:03 PM            770 separator.tsx
+-a----        21-09-2025  09:03 PM           4281 sheet.tsx
+-a----        21-09-2025  09:03 PM          23381 sidebar.tsx
+-a----        21-09-2025  09:03 PM            261 skeleton.tsx
+-a----        21-09-2025  09:03 PM           1091 slider.tsx
+-a----        21-09-2025  09:03 PM            894 sonner.tsx
+-a----        21-09-2025  09:03 PM           1153 switch.tsx
+-a----        21-09-2025  09:03 PM           2765 table.tsx
+-a----        21-09-2025  09:03 PM           1897 tabs.tsx
+-a----        21-09-2025  09:03 PM            689 textarea.tsx
+-a----        21-09-2025  09:03 PM           4859 toast.tsx
+-a----        21-09-2025  09:03 PM            786 toaster.tsx
+-a----        21-09-2025  09:03 PM           1753 toggle-group.tsx
+-a----        21-09-2025  09:03 PM           1541 toggle.tsx
+-a----        21-09-2025  09:03 PM           1159 tooltip.tsx
+-a----        21-09-2025  09:03 PM            565 use-mobile.tsx
+-a----        21-09-2025  09:03 PM           3948 use-toast.ts
+
+
+(.venv) PS C:\Users\Suganth\Downloads\mini2\components\ui> cd ..
+(.venv) PS C:\Users\Suganth\Downloads\mini2\components> cd ..
+(.venv) PS C:\Users\Suganth\Downloads\mini2> cd context
+cd : Cannot find path 'C:\Users\Suganth\Downloads\mini2\context' because it does not exist.
+At line:1 char:1
++ cd context
++ ~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Users\Suganth\Downloads\mini2\context:String) [Set-Location], ItemNotFoundException
+    + FullyQualifiedErrorId : PathNotFound,Microsoft.PowerShell.Commands.SetLocationCommand
+
+(.venv) PS C:\Users\Suganth\Downloads\mini2> cd contexts
+(.venv) PS C:\Users\Suganth\Downloads\mini2\contexts> dir
+
+
+    Directory: C:\Users\Suganth\Downloads\mini2\contexts
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----        21-09-2025  09:03 PM           1641 auth-context.tsx
+-a----        21-09-2025  09:03 PM           3677 chat-context.tsx
+
+
+(.venv) PS C:\Users\Suganth\Downloads\mini2\contexts> cd ..
+(.venv) PS C:\Users\Suganth\Downloads\mini2> cd hooks
+(.venv) PS C:\Users\Suganth\Downloads\mini2\hooks> dir
+
+
+    Directory: C:\Users\Suganth\Downloads\mini2\hooks
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----        21-09-2025  09:03 PM            565 use-mobile.tsx
+-a----        21-09-2025  09:03 PM           3948 use-toast.ts
+
+
+(.venv) PS C:\Users\Suganth\Downloads\mini2\hooks> cd ..
+(.venv) PS C:\Users\Suganth\Downloads\mini2> cd lib
+(.venv) PS C:\Users\Suganth\Downloads\mini2\lib> dir
+
+
+    Directory: C:\Users\Suganth\Downloads\mini2\lib
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----        21-09-2025  09:03 PM           2324 database.ts
+-a----        21-09-2025  09:03 PM           3881 document-processor.ts
+-a----        21-09-2025  09:03 PM           3443 persistent-storage.ts
+-a----        21-09-2025  09:03 PM           5750 rag-service.ts
+-a----        21-09-2025  09:03 PM           3034 simple-auth.ts
+-a----        21-09-2025  09:03 PM            166 utils.ts
+-a----        21-09-2025  09:03 PM          12655 vector-db.ts
+
+
+(.venv) PS C:\Users\Suganth\Downloads\mini2\lib> cd ..
+(.venv) PS C:\Users\Suganth\Downloads\mini2> 
+these are the files I have 

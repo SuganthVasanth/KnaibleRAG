@@ -1,0 +1,13 @@
+"use client"
+
+import type React from "react"
+import { AuthProvider } from "@/contexts/auth-context"
+import { ChatProvider } from "@/contexts/chat-context"
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <AuthProvider>
+      <ChatProvider>{children}</ChatProvider>
+    </AuthProvider>
+  )
+}

@@ -261,79 +261,177 @@ const handleGenerateKey = async () => {
   };
 
   // Upload file to backend with the filename from dialog
+  // const handleManualTextUpload = async () => {
+  //   if (!selectedFile) return;
+
+  //   setIsUploading(true);
+  //   setUploadProgress(0);
+  //   setUploadStatus("Uploading...");
+
+  //   try {
+  //     const userId = user?._id || "demo-user-1";
+  //     const token = user?.token;
+
+  //     console.log(token);
+  //     if (!token) {
+  //       console.error(
+  //         "❌ No token found. User may not be authenticated.",
+  //         token
+  //       );
+  //       setUploadStatus("Unauthorized: Please log in again.");
+  //       setIsUploading(false);
+  //       return;
+  //     }
+
+  //     // Create new file with name entered by user in dialog
+  //     const fileToUpload = new File([selectedFile], manualFilename);
+  //     // print(fileToUpload)
+  //     const formData = new FormData();
+  //     formData.append("file", fileToUpload);
+  //     formData.append("userId", user?._id);
+
+  //     console.log("📤 Uploading file:", fileToUpload.name);
+  //     console.log("🧠 Token used:", token);
+
+  //     console.log(selectedFile);
+  //     const response = await fetch("http://127.0.0.1:8000/documents/upload", {
+  //       method: "POST",
+  //       headers: {
+  //         Authorization: `Bearer ${token}`, // ✅ Added token
+  //       },
+  //       body: formData,
+  //     });
+
+  //     setUploadProgress(70);
+
+  //     if (!response.ok) {
+  //       console.log(response.body);
+
+  //       throw new Error(
+  //         `Upload failed: ${response.status} ${response.statusText}`
+  //       );
+  //     }
+
+  //     const result = await response.json();
+
+  //     if (result.success) {
+  //       // Close dialog and refresh documents
+  //       setShowPdfHelper(false);
+  //       setSelectedFile(null);
+  //       setManualFilename("");
+  //       fetchDocuments();
+  //       setUploadStatus(`Successfully uploaded ${fileToUpload.name}`);
+  //     } else {
+  //       throw new Error(result.error || "Upload failed");
+  //     }
+
+  //     setUploadProgress(100);
+  //   } catch (error) {
+  //     console.error("❌ Upload error:", error);
+  //     setUploadStatus(`Error uploading: ${(error as Error).message}`);
+  //   }
+
+  //   setIsUploading(false);
+  //   setUploadProgress(0);
+  // };
+
+
+
+
   const handleManualTextUpload = async () => {
-    if (!selectedFile) return;
+  if (!selectedFile) return;
 
-    setIsUploading(true);
-    setUploadProgress(0);
-    setUploadStatus("Uploading...");
+  setIsUploading(true);
+  setUploadProgress(0);
+  setUploadStatus("Uploading...");
 
-    try {
-      const userId = user?._id || "demo-user-1";
-      const token = user?.token;
+  try {
+    const userId = user?._id || "demo-user-1";
+    const token = user?.token;
 
-      console.log(token);
-      if (!token) {
-        console.error(
-          "❌ No token found. User may not be authenticated.",
-          token
-        );
-        setUploadStatus("Unauthorized: Please log in again.");
-        setIsUploading(false);
-        return;
-      }
-
-      // Create new file with name entered by user in dialog
-      const fileToUpload = new File([selectedFile], manualFilename);
-      // print(fileToUpload)
-      const formData = new FormData();
-      formData.append("file", fileToUpload);
-      formData.append("userId", user?._id);
-
-      console.log("📤 Uploading file:", fileToUpload.name);
-      console.log("🧠 Token used:", token);
-
-      console.log(selectedFile);
-      const response = await fetch("http://127.0.0.1:8000/documents/upload", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`, // ✅ Added token
-        },
-        body: formData,
-      });
-
-      setUploadProgress(70);
-
-      if (!response.ok) {
-        console.log(response.body);
-
-        throw new Error(
-          `Upload failed: ${response.status} ${response.statusText}`
-        );
-      }
-
-      const result = await response.json();
-
-      if (result.success) {
-        // Close dialog and refresh documents
-        setShowPdfHelper(false);
-        setSelectedFile(null);
-        setManualFilename("");
-        fetchDocuments();
-        setUploadStatus(`Successfully uploaded ${fileToUpload.name}`);
-      } else {
-        throw new Error(result.error || "Upload failed");
-      }
-
-      setUploadProgress(100);
-    } catch (error) {
-      console.error("❌ Upload error:", error);
-      setUploadStatus(`Error uploading: ${(error as Error).message}`);
+    if (!token) {
+      setUploadStatus("Unauthorized: Please log in again.");
+      setIsUploading(false);
+      return;
     }
 
-    setIsUploading(false);
-    setUploadProgress(0);
-  };
+    // Create new file with user-entered filename
+    const fileToUpload = new File([selectedFile], manualFilename);
+    const formData = new FormData();
+    formData.append("file", fileToUpload);
+    formData.append("userId", userId);
+
+    console.log("📤 Uploading file:", fileToUpload.name);
+
+    // ✅ 1. FIRST: Store locally via documents/upload
+    const localResponse = await fetch("http://127.0.0.1:8000/documents/upload", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData
+    });
+
+    setUploadProgress(50);
+
+    if (!localResponse.ok) {
+      throw new Error(`Local storage failed: ${localResponse.status}`);
+    }
+
+    const localResult = await localResponse.json();
+    const documentId = localResult.document?.id;
+
+    if (!documentId) {
+      throw new Error("No document ID returned from local storage");
+    }
+
+    setUploadProgress(70);
+    setUploadStatus("Processing for vector storage...");
+
+    // ✅ 2. SECOND: Process for vector storage via upload_and_embed
+    const vectorFormData = new FormData();
+    vectorFormData.append("file", fileToUpload);
+    vectorFormData.append("user_id", userId);
+    vectorFormData.append("api_key", `kn_${userId}_api_key`);
+    // vectorFormData.append("doc_id", documentId);
+
+    const vectorResponse = await fetch("http://127.0.0.1:8000/upload_and_embed", {
+      method: "POST",
+      body: vectorFormData  // No auth needed for this endpoint
+    });
+
+    setUploadProgress(90);
+
+    if (!vectorResponse.ok) {
+      console.log(vectorResponse.json);
+      
+      throw new Error(`Vector storage failed: ${vectorResponse.status}`);
+    }
+
+    const vectorResult = await vectorResponse.json();
+
+    // ✅ SUCCESS: Both storage complete
+    setShowPdfHelper(false);
+    setSelectedFile(null);
+    setManualFilename("");
+    fetchDocuments(); // Refresh the document list
+    setUploadStatus(`Successfully uploaded and processed ${fileToUpload.name}`);
+    setUploadProgress(100);
+
+  } catch (error) {
+    console.error("❌ Upload error:", error);
+    setUploadStatus(`Error: ${(error as Error).message}`);
+  }
+
+  setIsUploading(false);
+  setUploadProgress(0);
+};
+
+
+
+
+
+
+
+
 
   const handleDeleteDocument = async (docId: string) => {
     try {
@@ -560,11 +658,46 @@ const handleGenerateKey = async () => {
                 </CardContent>
               </Card>
             </TabsContent>
-
-            {/* Other Tabs omitted for brevity */}
-            import ReactSelect from "react-select";
-
-// Inside your component:
+            
+            <TabsContent value="chat">
+               <Card>
+                 <CardHeader>
+                   <CardTitle className="flex items-center">
+                    <MessageSquare className="h-5 w-5 mr-2" />
+                     Chat with Your Documents
+                   </CardTitle>
+                   <CardDescription>
+                    Ask questions about your uploaded documents. The AI will analyze the content and provide answers
+                    based on what you've uploaded.
+                   </CardDescription>
+                 </CardHeader>
+                 <CardContent>
+                  {getReadyDocumentCount() === 0 ? (
+                    <div className="text-center py-8">
+                      <AlertCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                      <p className="text-gray-500 mb-4">
+                        No documents ready for chat. Upload and process documents first.
+                      </p>
+                      <Button variant="outline" onClick={() => document.getElementById("file-upload")?.click()}>
+                        Upload Documents
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <p className="text-gray-600 mb-4">
+                        You have {getReadyDocumentCount()} document(s) ready for questions.
+                      </p>
+                      <Link href="/chat">
+                        <Button size="lg">
+                          <MessageSquare className="h-5 w-5 mr-2" />
+                          Start Chatting
+                        </Button>
+                      </Link>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
 
 <TabsContent value="api">
   <Card>

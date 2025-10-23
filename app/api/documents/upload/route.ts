@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { extractTextFromFile } from "@/lib/document-processor"
-import { chunkText, storeDocumentChunks } from "@/lib/vector-db"
+import { writeFile } from "fs/promises"
+import { join } from "path"
 import { db } from "@/lib/database"
 
 export async function POST(request: NextRequest) {
@@ -22,47 +22,56 @@ export async function POST(request: NextRequest) {
     const actualUserId = userId || "demo-user-1"
     console.log(`📤 [API] Using user ID: ${actualUserId}`)
 
-    // Extract text from file
-    console.log(`📄 [API] Extracting text from ${file.name}`)
-    const content = await extractTextFromFile(file)
-    console.log(`📄 [API] Extracted ${content.length} characters`)
-
-    // Check if we have enough content
-    if (content.length < 50) {
-      console.log(`⚠️ [API] Extracted content is too short: ${content.length} characters`)
-      return NextResponse.json(
-        {
-          error:
-            "The extracted content is too short or could not be properly extracted. For PDFs, please try using the manual text entry option.",
-        },
-        { status: 400 },
-      )
-    }
-
-    // Chunk the content
-    console.log(`🔪 [API] Chunking content`)
-    const chunks = await chunkText(content)
-    console.log(`🔪 [API] Created ${chunks.length} chunks`)
-
     // Generate document ID
     const documentId = Math.random().toString(36).substr(2, 9)
     console.log(`📄 [API] Generated document ID: ${documentId}`)
+
+    // Save file to public/uploaded_files
+    const filename = `${actualUserId}_${file.name}`
+    const filePath = join(process.cwd(), "public", "uploaded_files", filename)
+    const bytes = await file.arrayBuffer()
+    const buffer = Buffer.from(bytes)
+    await writeFile(filePath, buffer)
+    console.log(`💾 [API] File saved to ${filePath}`)
 
     // Store document in database (in-memory for demo)
     console.log(`💾 [API] Storing document in database`)
     const document = await db.documents.create({
       userId: actualUserId,
       filename: file.name,
-      content,
-      chunks,
+      content: "", // No content extraction here, handled by vector service
+      chunks: [],
       status: "processing",
     })
     console.log(`✅ [API] Document stored in database with ID: ${document.id}`)
 
-    // Store chunks in vector database
-    console.log(`🚀 [API] Storing chunks in vector database`)
-    const stored = await storeDocumentChunks(actualUserId, documentId, chunks)
-    console.log(`✅ [API] Vector storage result: ${stored}`)
+    // Call vector service to embed the file
+    console.log(`🚀 [API] Calling vector service to embed file`)
+    const vectorFormData = new FormData()
+    vectorFormData.append("user_id", actualUserId)
+    vectorFormData.append("api_key", process.env.GROQ_API_KEY || "sk-demo-key") // Use env var or demo key
+    vectorFormData.append("doc_id", documentId)
+    vectorFormData.append("file", new Blob([buffer], { type: file.type }), file.name)
+
+    const vectorResponse = await fetch("http://127.0.0.1:8000/upload_and_embed", {
+      method: "POST",
+      body: vectorFormData,
+    })
+
+    if (!vectorResponse.ok) {
+      console.error(`❌ [API] Vector service error: ${vectorResponse.status}`)
+      document.status = "error"
+      return NextResponse.json(
+        {
+          error: "Failed to embed document in vector DB",
+          details: `Vector service responded with ${vectorResponse.status}`,
+        },
+        { status: 500 },
+      )
+    }
+
+    const vectorResult = await vectorResponse.json()
+    console.log(`✅ [API] Vector embedding result:`, vectorResult)
 
     // Update document status to ready
     document.status = "ready"
@@ -75,9 +84,9 @@ export async function POST(request: NextRequest) {
         uploadedAt: document.uploadedAt,
         status: document.status,
       },
-      vectorStored: stored,
+      vectorStored: true,
       userId: actualUserId,
-      chunksCount: chunks.length,
+      chunksCount: vectorResult.num_chunks || 0,
     }
 
     console.log(`🎉 [API] Upload completed successfully:`, response)

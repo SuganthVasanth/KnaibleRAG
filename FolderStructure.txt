@@ -225,3 +225,65 @@ Collections:User,Documents,Chat,APIKeys
 
 
 
+
+
+
+PS D:\knaible> cd KnaibleRAG
+PS D:\knaible\KnaibleRAG> cd backend
+PS D:\knaible\KnaibleRAG\backend> dir
+
+
+    Directory: D:\knaible\KnaibleRAG\backend
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----        23-10-2025  10:57 AM                database
+d-----        23-10-2025  10:57 AM                routes
+d-----        23-10-2025  03:19 PM                utils
+d-----        23-10-2025  12:16 PM                venv
+d-----        23-10-2025  01:46 PM                __pycache__
+-a----        23-10-2025  03:19 PM             71 .env
+-a----        23-10-2025  10:57 AM            149 config.py
+-a----        23-10-2025  01:46 PM           7563 main.py
+-a----        23-10-2025  10:57 AM            215 quick-test.js
+-a----        23-10-2025  10:57 AM            130 requirements.txt
+-a----        23-10-2025  10:57 AM              0 __init__.py
+
+
+PS D:\knaible\KnaibleRAG\backend> cd utils
+PS D:\knaible\KnaibleRAG\backend\utils> dir
+
+
+    Directory: D:\knaible\KnaibleRAG\backend\utils
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----        23-10-2025  01:46 PM                __pycache__
+d-----        23-10-2025  11:50 AM                __pycache__ copy
+-a----        23-10-2025  03:19 PM             71 .env
+-a----        23-10-2025  10:57 AM           1412 auth.py
+-a----        23-10-2025  01:46 PM           2467 embed_store.py
+-a----        22-10-2025  04:02 PM           3552 extract_text.py
+
+
+PS D:\knaible\KnaibleRAG\backend\utils>  cd..
+PS D:\knaible\KnaibleRAG\backend> cd routes 
+PS D:\knaible\KnaibleRAG\backend\routes> dir
+
+
+    Directory: D:\knaible\KnaibleRAG\backend\routes
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----        23-10-2025  11:05 AM                __pycache__
+-a----        23-10-2025  10:57 AM           1447 apikeys.py
+-a----        23-10-2025  10:57 AM           8613 chat.py
+-a----        23-10-2025  10:57 AM          20204 documents.py
+-a----        23-10-2025  10:57 AM           2926 users.py
+
+
+PS D:\knaible\KnaibleRAG\backend\routes> cd .. 
+PS D:\knaible\KnaibleRAG\backend> 

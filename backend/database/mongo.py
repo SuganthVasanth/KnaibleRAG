@@ -20,6 +20,11 @@ fs = gridfs.GridFS(db)
 # 🧩 USER FUNCTIONS
 # ============================================================
 
+
+# database/mongo.py
+def get_api_keys_by_user(user_id: str):
+    return list(api_keys_collection.find({"user_id": ObjectId(user_id)}))
+
 def get_user_by_email(email: str):
     """Find a user by email."""
     return users_collection.find_one({"email": email})

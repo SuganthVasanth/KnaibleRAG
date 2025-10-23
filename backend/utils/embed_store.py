@@ -42,16 +42,19 @@ def store_embeddings(user_id, api_key, texts):
     qdrant.upsert(collection_name="chatbot_embeddings", points=points)
     # print(f"Stored {len(points)} chunks for {doc_id} (User: {user_id})")
 
-def query_embeddings(api_key, query_text):
+def query_embeddings(user_id=None, api_key=None, query_text=None):
     """Retrieve top chunks for a given API key and list of documents."""
 
     query_vector = embedder.encode([query_text])[0]
-
-    # Build filter
-    filters = [
-        FieldCondition(key="user_id", match=MatchValue(value=api_key))
-    ]
-
+    if user_id is not None:
+        # Build filter
+        filters = [
+            FieldCondition(key="user_id", match=MatchValue(value=user_id))
+        ]
+    elif api_key is not None:
+        filters = [
+            FieldCondition(key="api_key", match=MatchValue(value=api_key))
+        ]
     # if doc_ids:
     #     # Create OR filter for multiple doc_ids
     #     doc_conditions = [FieldCondition(key="doc_id", match=MatchValue(value=d)) for d in doc_ids]

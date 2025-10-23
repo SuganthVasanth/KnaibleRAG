@@ -150,7 +150,7 @@
 
       // Create FormData instead of JSON
       const formData = new FormData()
-      formData.append('api_key', user?._id || "demo-user-1") // Using userId as api_key
+      formData.append('user_id', user?._id || "demo-user-1") // Using userId as api_key
       // formData.append('doc_ids', '68f9f6fbb36ef046baddaa0f') // You'll need to provide actual document IDs
       formData.append('query', currentInput)
 
@@ -160,6 +160,7 @@
       })
 
       console.log("Response status:", response.status)
+      console.log(response.headers)
       console.log(user?._id)
 
 

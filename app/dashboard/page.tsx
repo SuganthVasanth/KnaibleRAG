@@ -2,9 +2,9 @@
 "use client";
 
 // import ReactSelect from "react-select";
-import ReactSelect, { type MultiValue, type SingleValue } from "react-select";
 
 import type React from "react";
+import ReactSelect, { type MultiValue, type SingleValue } from "react-select";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -92,6 +92,10 @@ export default function DashboardPage() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadStatus, setUploadStatus] = useState("");
   const [showPdfHelper, setShowPdfHelper] = useState(false);
+  const [copyMessage, setCopyMessage] = useState<string>("");
+
+  //API Keys
+  const [apiKeys, setApiKeys] = useState<{ key: string; documents: string[] }[]>([]);
 
   // For PDF helper dialog file and filename
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -102,6 +106,8 @@ export default function DashboardPage() {
     users: [],
   });
   const [isLoadingDocuments, setIsLoadingDocuments] = useState(false);
+  const [copiedKeyIndex, setCopiedKeyIndex] = useState<number | null>(null);
+
 
   const llmModels: string[] = ["LLM3 model"];
   const storedFiles: string[] = ["file1.pdf", "file2.docx", "file3.txt"];
@@ -117,6 +123,22 @@ export default function DashboardPage() {
 
   const [apiKey, setApiKey] = useState("");
 
+
+
+  //Fetch API Keys
+  const fetchApiKeys = async () => {
+  if (!user?._id) return;
+
+  try {
+    const response = await fetch(`http://127.0.0.1:8000/apikeys/user-api-keys/${user._id}`);
+    if (!response.ok) throw new Error(`Failed to fetch API keys: ${response.status}`);
+    const data = await response.json();
+    setApiKeys(data);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 // Generate API key button handler
 const handleGenerateKey = async () => {
   if (!user?._id) return;
@@ -130,7 +152,7 @@ const handleGenerateKey = async () => {
       userId: user._id,
       documents: selectedFiles.map((file) => ({
         filename: file,
-        path: `/uploaded_files/${file}`, // optional: store path if you want
+        path: `./public/uploaded_files/${user._id}_${file}`, // optional: store path if you want
       })),
     };
 
@@ -248,6 +270,11 @@ const handleGenerateKey = async () => {
     fetchUserInfo();
     fetchDocuments();
   }, [user?.id]);
+  useEffect(() => {
+  // Fetch API keys when Dashboard loads
+  fetchApiKeys();
+}, [user?._id]); // fetch again if user changes
+
 
   // When file is selected from file input
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -506,12 +533,10 @@ const handleGenerateKey = async () => {
           </div>
 
           <Tabs defaultValue="documents" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-5">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="documents">Documents</TabsTrigger>
               <TabsTrigger value="chat">Chat</TabsTrigger>
               <TabsTrigger value="api">API Access</TabsTrigger>
-              <TabsTrigger value="settings">Settings</TabsTrigger>
-              <TabsTrigger value="debug">Debug</TabsTrigger>
             </TabsList>
 
             <TabsContent value="documents" className="space-y-6">
@@ -658,34 +683,42 @@ const handleGenerateKey = async () => {
                 </CardContent>
               </Card>
             </TabsContent>
-            
+
             <TabsContent value="chat">
-               <Card>
-                 <CardHeader>
-                   <CardTitle className="flex items-center">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
                     <MessageSquare className="h-5 w-5 mr-2" />
-                     Chat with Your Documents
-                   </CardTitle>
-                   <CardDescription>
-                    Ask questions about your uploaded documents. The AI will analyze the content and provide answers
-                    based on what you've uploaded.
-                   </CardDescription>
-                 </CardHeader>
-                 <CardContent>
+                    Chat with Your Documents
+                  </CardTitle>
+                  <CardDescription>
+                    Ask questions about your uploaded documents. The AI will
+                    analyze the content and provide answers based on what you've
+                    uploaded.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
                   {getReadyDocumentCount() === 0 ? (
                     <div className="text-center py-8">
                       <AlertCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                       <p className="text-gray-500 mb-4">
-                        No documents ready for chat. Upload and process documents first.
+                        No documents ready for chat. Upload and process
+                        documents first.
                       </p>
-                      <Button variant="outline" onClick={() => document.getElementById("file-upload")?.click()}>
+                      <Button
+                        variant="outline"
+                        onClick={() =>
+                          document.getElementById("file-upload")?.click()
+                        }
+                      >
                         Upload Documents
                       </Button>
                     </div>
                   ) : (
                     <div className="text-center py-8">
                       <p className="text-gray-600 mb-4">
-                        You have {getReadyDocumentCount()} document(s) ready for questions.
+                        You have {getReadyDocumentCount()} document(s) ready for
+                        questions.
                       </p>
                       <Link href="/chat">
                         <Button size="lg">
@@ -699,7 +732,7 @@ const handleGenerateKey = async () => {
               </Card>
             </TabsContent>
 
-<TabsContent value="api">
+            <TabsContent value="api">
   <Card>
     <CardHeader>
       <CardTitle className="flex items-center">
@@ -707,29 +740,52 @@ const handleGenerateKey = async () => {
         API Access
       </CardTitle>
       <CardDescription>
-        Use your API key to integrate your chatbot into external applications
+        Use your API keys to integrate your chatbot into external applications
       </CardDescription>
     </CardHeader>
 
     <CardContent className="space-y-4">
-      {/* API Key */}
+      {/* Fetch API Keys on mount */}
+      {/* {useEffect(() => {
+        fetchApiKeys();
+      }, [])} */}
+      
+
+      {/* Generated API Keys List */}
       <div>
-        <Label>Your API Key</Label>
-        <div className="flex space-x-2">
-          <Input
-            value={`kn_${user?._id || "user"}_api_key`}
-            readOnly
-            className="font-mono"
-          />
-          <Button
-            variant="outline"
-            onClick={() =>
-              navigator.clipboard.writeText(`kn_${user?._id || "user"}_api_key`)
-            }
-          >
-            Copy
-          </Button>
-        </div>
+        <Label>Generated API Keys</Label>
+        {apiKeys.length === 0 ? (
+          <p className="text-sm text-gray-500">No API keys generated yet.</p>
+        ) : (
+          <ul className="space-y-2 max-h-64 overflow-y-auto">
+            {apiKeys.map((keyObj, idx) => (
+              <li
+                key={idx}
+                className="flex items-center justify-between bg-white p-3 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+              >
+                <span className="font-mono">{keyObj.key}</span>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      navigator.clipboard.writeText(keyObj.key);
+                      setCopiedKeyIndex(idx);
+                      setTimeout(() => setCopiedKeyIndex(null), 2000);
+                    }}
+                  >
+                    Copy
+                  </Button>
+                  {copiedKeyIndex === idx && (
+                    <span className="text-sm text-green-600">
+                      API Key Copied to Clipboard
+                    </span>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       {/* LLM Model Select */}
@@ -737,14 +793,8 @@ const handleGenerateKey = async () => {
         <Label>Choose LLM Model</Label>
         <ReactSelect<OptionType, false>
           options={llmModels.map((model) => ({ value: model, label: model }))}
-          value={
-            selectedModel
-              ? { value: selectedModel, label: selectedModel }
-              : null
-          }
-          onChange={(option: SingleValue<OptionType>) =>
-            setSelectedModel(option?.value || "")
-          }
+          value={selectedModel ? { value: selectedModel, label: selectedModel } : null}
+          onChange={(option: SingleValue<OptionType>) => setSelectedModel(option?.value || "")}
           placeholder="Select a model"
           isClearable
         />
@@ -753,38 +803,38 @@ const handleGenerateKey = async () => {
       {/* Stored Files Multi-Select */}
       <div>
         <Label>Select Stored File(s)</Label>
-       <ReactSelect<OptionType, true>
-  isMulti
-  options={documentOptions}
-  value={documentOptions.filter(option => selectedFiles.includes(option.value))}
-  onChange={(options: MultiValue<OptionType>) =>
-    setSelectedFiles(options.map(o => o.value))
-  }
-  placeholder="Select files"
-/>
+        <ReactSelect<OptionType, true>
+          isMulti
+          options={documentOptions}
+          value={documentOptions.filter((option) => selectedFiles.includes(option.value))}
+          onChange={(options: MultiValue<OptionType>) => setSelectedFiles(options.map((o) => o.value))}
+          placeholder="Select files"
+        />
       </div>
 
       {/* Example Usage */}
       <div className="bg-gray-50 p-4 rounded-lg">
         <h4 className="font-medium mb-2">Example Usage</h4>
         <pre className="text-sm text-gray-600 overflow-x-auto">
-          {`curl -X POST https://api.knaible.com/v1/chat \\
--H "Authorization: Bearer kn_${user?._id || "user"}_api_key" \\
--H "Content-Type: application/json" \\
--d '{
-  "message": "What is this document about?",
-  "model": "${selectedModel}",
-  "files": ${JSON.stringify(selectedFiles)}
-}'`}
+          {apiKeys.length > 0
+            ? `curl.exe -X POST "http://127.0.0.1:8000/query_llm_api" -F "api_key=${apiKeys[0].key}" -F "query=What is the main topic of the document?"`
+            : "Generate an API key first to see example usage."}
         </pre>
       </div>
     </CardContent>
-     <Button onClick={handleGenerateKey} variant="default">
-        Generate API Key
-      </Button>
+
+    {/* Generate API Key Button */}
+    <Button
+      onClick={async () => {
+        await handleGenerateKey();
+        fetchApiKeys(); // Refresh API keys list after generating
+      }}
+      variant="default"
+    >
+      Generate API Key
+    </Button>
   </Card>
 </TabsContent>
-
           </Tabs>
         </div>
       </div>

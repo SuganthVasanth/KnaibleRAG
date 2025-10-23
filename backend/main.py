@@ -1,14 +1,15 @@
-# app.py
+# main.py
 import os
 import shutil
 import requests
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException,APIRouter, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from pathlib import Path
 # --- Local imports for utils ---
 from .utils.extract_text import extract_text
 from .utils.embed_store import init_collection, store_embeddings, query_embeddings
+
 
 # --- Router imports ---
 from backend.routes import documents, chat, users, apikeys
@@ -105,16 +106,16 @@ async def upload_and_embed(
 
 @app.post("/query_llm")
 async def query_llm(
-    api_key: str = Form(...),
+    user_id: str = Form(...),
     query: str = Form(...)
 ):
     print(GROQ_API_KEY)
     if not GROQ_API_KEY:
         raise HTTPException(status_code=500, detail="Set GROQ_API_KEY in environment.")
-    print(api_key+" "+query,end="\n")
+    print(user_id+" "+query,end="\n")
     ensure_collection()
     # doc_list = [d.strip() for d in doc_ids.split(",") if d.strip()]
-    chunks = query_embeddings(api_key, query)
+    chunks = query_embeddings(user_id=user_id, query_text=query)
     if not chunks:
         raise HTTPException(status_code=404, detail="No relevant context found in vector DB.")
 
@@ -151,6 +152,74 @@ Answer:
 
     llm_response = " ".join(output_texts).strip()
 
+    return {"llm_response": llm_response}
+
+
+router = APIRouter()
+
+# --- Dependency: Validate API Key ---
+def validate_api_key(api_key: str = Form(...)):
+    """
+    This function should call your API key authentication service.
+    For now, we assume all keys starting with 'kn_' are valid.
+    Replace with real auth provider integration.
+    """
+    if not api_key.startswith("kn_"):
+        raise HTTPException(status_code=401, detail="Invalid API Key")
+    return api_key
+
+@app.post("/query_llm_api")
+async def query_llm_api(
+    query: str = Form(...),
+    api_key: str = Depends(validate_api_key)
+):
+    """
+    External API endpoint for LLM query using API Key authentication.
+    """
+    if not GROQ_API_KEY:
+        raise HTTPException(status_code=500, detail="Server misconfigured: GROQ_API_KEY not set")
+
+    # 1️⃣ Fetch relevant chunks from vector DB based on api_key
+    chunks = query_embeddings(api_key=api_key, query_text=query)
+    if not chunks:
+        raise HTTPException(status_code=404, detail="No relevant context found in vector DB.")
+
+    context_text = "\n\n".join(chunks)
+
+    # 2️⃣ Prepare prompt for LLM
+    prompt = f"""
+You are a helpful assistant. Use the context below to answer the question.
+Provide only one to four concise sentences as the answer. Do NOT include reasoning, steps, or extra text.
+
+Context:
+{context_text}
+
+Question: {query}
+Answer:
+"""
+
+    # 3️⃣ Call Groq LLM
+    headers = {"Authorization": f"Bearer {GROQ_API_KEY}"}
+    payload = {
+        "model": "llama-3.1-8b-instant",
+        "input": prompt,
+        "temperature": 0.2,
+        "max_output_tokens": 512
+    }
+
+    resp = requests.post(GROQ_ENDPOINT, headers=headers, json=payload)
+    if resp.status_code != 200:
+        raise HTTPException(status_code=500, detail=f"Groq API call failed: {resp.status_code} {resp.text}")
+
+    result = resp.json()
+    output_texts = [
+        c.get("text").strip()
+        for item in result.get("output", [])
+        for c in item.get("content", [])
+        if c.get("type") == "output_text"
+    ]
+
+    llm_response = " ".join(output_texts).strip()
     return {"llm_response": llm_response}
 
 @app.post("/embed_existing")

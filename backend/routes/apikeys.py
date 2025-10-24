@@ -114,7 +114,11 @@ async def generate_api_key_route(request: APIKeyRequest):
         file_path = doc["path"]
         try:
             text = extract_text(file_path)  # Extract text from PDF/DOCX
-            store_embeddings(str(user_object_id), api_key, [text])  # Wrap text in list
+            # store_embeddings(str(user_object_id), api_key, [text])  # Wrap text in list
+            chunk_size = 2000
+            chunks = [text[i:i + chunk_size] for i in range(0, len(text), chunk_size)]
+            store_embeddings(str(user_object_id), api_key, chunks)
+
         except Exception as e:
             print(f"Failed to process {file_path}: {e}")
 

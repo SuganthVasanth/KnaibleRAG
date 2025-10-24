@@ -140,8 +140,26 @@ Answer:
     }
 
     resp = requests.post(GROQ_ENDPOINT, headers=headers, json=payload)
+    # if resp.status_code != 200:
+    #     raise HTTPException(status_code=500, detail=f"Groq API call failed: {resp.status_code} {resp.text}")
     if resp.status_code != 200:
-        raise HTTPException(status_code=500, detail=f"Groq API call failed: {resp.status_code} {resp.text}")
+        error_text = resp.text
+
+        if "Request too large" in error_text or "413" in error_text:
+            return {
+                "llm_response": "⚠ Response too large for this plan (limit 6000 tokens). Please shorten your input or upgrade your Groq plan."
+            }
+        elif "rate_limit_exceeded" in error_text:
+            return {
+                "llm_response": "⚠ Rate limit exceeded. Please wait a few seconds and try again."
+            }
+        elif "limit 6000" in error_text:
+            return {
+                "llm_response": "⚠ Request exceeded 6000 token limit. Try reducing context or question size."
+            }
+        else:
+            raise HTTPException(status_code=500, detail=f"Groq API call failed: {resp.status_code} {error_text}")
+
 
     result = resp.json()
     output_texts = []

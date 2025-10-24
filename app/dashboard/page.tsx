@@ -109,7 +109,7 @@ export default function DashboardPage() {
   const [copiedKeyIndex, setCopiedKeyIndex] = useState<number | null>(null);
 
 
-  const llmModels: string[] = ["LLM3 model"];
+  const llmModels: string[] = ["LLM3 model","GPT‑4.5","Gemma (by DeepMind)","Claude 3.7 (by Anthropic)"];
   const storedFiles: string[] = ["file1.pdf", "file2.docx", "file3.txt"];
   const fileOptions = storedFiles.map((file) => ({ label: file, value: file }));
   const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
@@ -733,108 +733,126 @@ const handleGenerateKey = async () => {
             </TabsContent>
 
             <TabsContent value="api">
-  <Card>
-    <CardHeader>
-      <CardTitle className="flex items-center">
-        <Key className="h-5 w-5 mr-2" />
-        API Access
-      </CardTitle>
-      <CardDescription>
-        Use your API keys to integrate your chatbot into external applications
-      </CardDescription>
-    </CardHeader>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Key className="h-5 w-5 mr-2" />
+                    API Access
+                  </CardTitle>
+                  <CardDescription>
+                    Use your API keys to integrate your chatbot into external
+                    applications
+                  </CardDescription>
+                </CardHeader>
 
-    <CardContent className="space-y-4">
-      {/* Fetch API Keys on mount */}
-      {/* {useEffect(() => {
+                <CardContent className="space-y-4">
+                  {/* Fetch API Keys on mount */}
+                  {/* {useEffect(() => {
         fetchApiKeys();
       }, [])} */}
-      
 
-      {/* Generated API Keys List */}
-      <div>
-        <Label>Generated API Keys</Label>
-        {apiKeys.length === 0 ? (
-          <p className="text-sm text-gray-500">No API keys generated yet.</p>
-        ) : (
-          <ul className="space-y-2 max-h-64 overflow-y-auto">
-            {apiKeys.map((keyObj, idx) => (
-              <li
-                key={idx}
-                className="flex items-center justify-between bg-white p-3 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
-              >
-                <span className="font-mono">{keyObj.key}</span>
-                <div className="flex items-center space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      navigator.clipboard.writeText(keyObj.key);
-                      setCopiedKeyIndex(idx);
-                      setTimeout(() => setCopiedKeyIndex(null), 2000);
-                    }}
-                  >
-                    Copy
-                  </Button>
-                  {copiedKeyIndex === idx && (
-                    <span className="text-sm text-green-600">
-                      API Key Copied to Clipboard
-                    </span>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+                  {/* Generated API Keys List */}
+                  <div>
+                    <Label>Generated API Keys</Label>
+                    {apiKeys.length === 0 ? (
+                      <p className="text-sm text-gray-500">
+                        No API keys generated yet.
+                      </p>
+                    ) : (
+                      <ul className="space-y-2 max-h-64 overflow-y-auto">
+                        {apiKeys.map((keyObj, idx) => (
+                          <li
+                            key={idx}
+                            className="flex items-center justify-between bg-white p-3 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+                          >
+                            <span className="font-mono">{keyObj.key}</span>
+                            <div className="flex items-center space-x-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  navigator.clipboard.writeText(keyObj.key);
+                                  setCopiedKeyIndex(idx);
+                                  setTimeout(
+                                    () => setCopiedKeyIndex(null),
+                                    2000
+                                  );
+                                }}
+                              >
+                                Copy
+                              </Button>
+                              {copiedKeyIndex === idx && (
+                                <span className="text-sm text-green-600">
+                                  API Key Copied to Clipboard
+                                </span>
+                              )}
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
 
-      {/* LLM Model Select */}
-      <div>
-        <Label>Choose LLM Model</Label>
-        <ReactSelect<OptionType, false>
-          options={llmModels.map((model) => ({ value: model, label: model }))}
-          value={selectedModel ? { value: selectedModel, label: selectedModel } : null}
-          onChange={(option: SingleValue<OptionType>) => setSelectedModel(option?.value || "")}
-          placeholder="Select a model"
-          isClearable
-        />
-      </div>
+                  {/* LLM Model Select */}
+                  <div>
+                    <Label>Choose LLM Model</Label>
+                    <ReactSelect<OptionType, false>
+                      options={llmModels.map((model) => ({
+                        value: model,
+                        label: model,
+                      }))}
+                      value={
+                        selectedModel
+                          ? { value: selectedModel, label: selectedModel }
+                          : null
+                      }
+                      onChange={(option: SingleValue<OptionType>) =>
+                        setSelectedModel(option?.value || "")
+                      }
+                      placeholder="Select a model"
+                      isClearable
+                    />
+                  </div>
 
-      {/* Stored Files Multi-Select */}
-      <div>
-        <Label>Select Stored File(s)</Label>
-        <ReactSelect<OptionType, true>
-          isMulti
-          options={documentOptions}
-          value={documentOptions.filter((option) => selectedFiles.includes(option.value))}
-          onChange={(options: MultiValue<OptionType>) => setSelectedFiles(options.map((o) => o.value))}
-          placeholder="Select files"
-        />
-      </div>
+                  {/* Stored Files Multi-Select */}
+                  <div>
+                    <Label>Select Stored File(s)</Label>
+                    <ReactSelect<OptionType, true>
+                      isMulti
+                      options={documentOptions}
+                      value={documentOptions.filter((option) =>
+                        selectedFiles.includes(option.value)
+                      )}
+                      onChange={(options: MultiValue<OptionType>) =>
+                        setSelectedFiles(options.map((o) => o.value))
+                      }
+                      placeholder="Select files"
+                    />
+                  </div>
 
-      {/* Example Usage */}
-      <div className="bg-gray-50 p-4 rounded-lg">
-        <h4 className="font-medium mb-2">Example Usage</h4>
-        <pre className="text-sm text-gray-600 overflow-x-auto">
-          {apiKeys.length > 0
-            ? `curl.exe -X POST "http://127.0.0.1:8000/query_llm_api" -F "api_key=${apiKeys[0].key}" -F "query=What is the main topic of the document?"`
-            : "Generate an API key first to see example usage."}
-        </pre>
-      </div>
-    </CardContent>
+                  {/* Example Usage */}
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h4 className="font-medium mb-2">Example Usage</h4>
+                    <pre className="text-sm text-gray-600 overflow-x-auto">
+                      {apiKeys.length > 0
+                        ? `curl.exe -X POST "http://127.0.0.1:8000/query_llm_api" -F "api_key=${apiKeys[0].key}" -F "query=What is the main topic of the document?"`
+                        : "Generate an API key first to see example usage."}
+                    </pre>
+                  </div>
+                </CardContent>
 
-    {/* Generate API Key Button */}
-    <Button
-      onClick={async () => {
-        await handleGenerateKey();
-        fetchApiKeys(); // Refresh API keys list after generating
-      }}
-      variant="default"
-    >
-      Generate API Key
-    </Button>
-  </Card>
-</TabsContent>
+                {/* Generate API Key Button */}
+                <Button
+                  onClick={async () => {
+                    await handleGenerateKey();
+                    fetchApiKeys(); // Refresh API keys list after generating
+                  }}
+                  variant="default"
+                >
+                  Generate API Key
+                </Button>
+              </Card>
+            </TabsContent>
           </Tabs>
         </div>
       </div>
